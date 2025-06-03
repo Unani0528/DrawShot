@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".setting">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingTop="20dp"
+        android:paddingRight="30dp"
+        android:paddingLeft="30dp"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="설정"
+            android:textSize="35sp"
+            android:textStyle="bold"></TextView>
+
+        <Switch
+            android:id="@+id/sw_darkmode"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="다크모드"
+            android:textSize="20sp"
+            android:textStyle="bold"></Switch>
+            <LinearLayout
+                android:id="@+id/lo_cngchar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="캐릭터 변경"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="20dp"
+                    android:text=">"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lo_voice"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="음성인식 키워드"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="20dp"
+                    android:text=">"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lo_buttonsetting"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="버튼 크기 몇 조작 민감도"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="20dp"
+                    android:text=">"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lo_team"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="팀 소개 및 문의"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingRight="20dp"
+                    android:text=">"
+                    android:textStyle="bold"
+                    android:textSize="20sp"></TextView>
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>
