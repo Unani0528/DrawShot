@@ -2,6 +2,7 @@ package com.example.approject;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -51,6 +52,8 @@ public class drowing extends Fragment {
     private float lastX, lastY, lastZ;
     private long lastShakeTime = 0;
 
+
+
     // 주기적으로 플레이어 이동
     private final Runnable moveRunnable = new Runnable() {
         @Override
@@ -76,6 +79,19 @@ public class drowing extends Fragment {
         thicknessSeekBar = root.findViewById(R.id.thicknessSeekBar);
         backgroundSwitch = root.findViewById(R.id.backgroundSwitch);
 
+        View view = inflater.inflate(R.layout.fragment_drowing, container, false);
+
+        // SharedPreferences에서 선택된 캐릭터 불러오기
+        SharedPreferences prefs = requireContext().getSharedPreferences("CharacterPrefs", Context.MODE_PRIVATE);
+        String selectedCharacter = prefs.getString("selected_character", "du");
+
+        // 선택된 캐릭터에 따라 이미지 설정
+        if (selectedCharacter.equals("minion")) {
+            player.setImageResource(R.drawable.minions);
+        } else {
+            player.setImageResource(R.drawable.dudu);
+        }
+
         // 조이스틱 움직임 설정
         joystickView.setJoystickListener((xPercent, yPercent) -> {
             dx = xPercent * 10 * sen;
@@ -86,10 +102,17 @@ public class drowing extends Fragment {
 
         // 그리기 버튼 터치 시 애니메이션 + 경로 시작
         drawButton.setOnTouchListener((v, event) -> {
+
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     isDrawing = true;
-                    player.setBackgroundResource(R.drawable.du_drawing_animation); // 애니메이션 시작
+
+                    if (selectedCharacter.equals("minion")) {
+                        player.setBackgroundResource(R.drawable.minions_drawing_animation);
+                    } else {
+                        player.setBackgroundResource(R.drawable.du_drawing_animation);
+                    }
+
                     frameAnimation = (AnimationDrawable) player.getBackground();
                     frameAnimation.start();
                     player.setImageResource(0); // static 이미지 제거
@@ -104,11 +127,18 @@ public class drowing extends Fragment {
                     isDrawing = false;
                     if (frameAnimation != null) frameAnimation.stop();
                     player.setBackgroundResource(0);
-                    player.setImageResource(R.drawable.dudu); // static 이미지 복구
+
+                    // 캐릭터별 정적 이미지 복원
+                    if (selectedCharacter.equals("minion")) {
+                        player.setImageResource(R.drawable.minions);
+                    } else {
+                        player.setImageResource(R.drawable.dudu);
+                    }
                     return true;
             }
             return false;
         });
+
 
         // 색상 선택 버튼
         colorButton.setOnClickListener(v -> showColorPicker());

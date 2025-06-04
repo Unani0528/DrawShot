@@ -93,18 +93,6 @@ public class main extends Fragment {
             }
         });
 
-        // 배경화면 선택 프래그먼트 이동
-        ImageButton j_background = view.findViewById(R.id.btn_backgound);
-        j_background.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Fragment nextfragment = new background();
-
-                requireActivity().getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(R.anim.slide_in_r, R.anim.fade_out_r, R.anim.fade_in_r, R.anim.slide_out_r)
-                        .replace(R.id.FMV_Common, nextfragment).addToBackStack(null).commit();
-            }
-        });
 
         // 팁 프래그먼트 이동
         ImageButton j_tip = view.findViewById(R.id.btn_tip);
