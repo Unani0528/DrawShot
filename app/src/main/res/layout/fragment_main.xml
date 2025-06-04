@@ -37,15 +37,6 @@
             ></ImageButton>
 
         <ImageButton
-            android:id="@+id/btn_backgound"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/imgbt_main_background"
-            android:background="#00000000"
-            ></ImageButton>
-
-        <ImageButton
             android:id="@+id/btn_tip"
             android:layout_width="match_parent"
             android:layout_height="80dp"
