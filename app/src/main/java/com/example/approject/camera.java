@@ -28,6 +28,9 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +47,7 @@ import org.jspecify.annotations.NonNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,6 +70,11 @@ public class camera extends Fragment {
     private ImageCapture j_imageCapture;
     private ImageView j_capturedPhoto;
     private int cameramode = 0;
+
+
+    // 음성인식 관련 필드
+    private SpeechRecognizer voiceRecognizer;
+    private Intent sttIntent;
 
     public camera() {
         // Required empty public constructor
@@ -125,12 +134,77 @@ public class camera extends Fragment {
             }
         });
 
-        // 카메라 권환 확인하기
+        // 카메라 권환 확인하고 요청하기
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{Manifest.permission.CAMERA}, 1000);
         }
+        // 마이크 권한 확인하고 요청하기
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.RECORD_AUDIO}, 1000);
+        }
+        // TODO: 음성인식 구현하기
+        // 음성인식 인텐트 생성하기
+        sttIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ko-KR");
+
+        voiceRecognizer = SpeechRecognizer.createSpeechRecognizer(getContext());
+        voiceRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onResults(Bundle result)
+            {
+                ArrayList<String> matches = result.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+            }
+
+            public void onReadyForSpeech(Bundle params) {
+
+            }
+
+            @Override
+            public void onBeginningOfSpeech() {
+
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+
+            }
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {
+
+            }
+
+            @Override
+            public void onEndOfSpeech() {
+
+            }
+
+            @Override
+            public void onError(int error) {
+
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+
+            }
+
+            @Override
+            public void onPartialResults(Bundle partialResults) {
+
+            }
+
+            @Override
+            public void onEvent(int eventType, Bundle params) {
+
+            }
+        });
+
 
         // 카메라 실행하기
         startCamera();
