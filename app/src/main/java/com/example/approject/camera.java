@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -41,6 +42,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 
 /**
@@ -60,7 +62,7 @@ public class camera extends Fragment {
 
     // CameraX관련 변수 선언
     private PreviewView j_prv_cameraPreview;
-    private Button j_btn_capture, j_btn_changecamera, j_btn_savePhoto;
+    private Button j_btn_capture, j_btn_changecamera, j_btn_savePhoto, j_btn_showGalery;
     private ImageCapture j_imageCapture;
     private ImageView j_capturedPhoto;
     private int cameramode = 0;
@@ -106,6 +108,7 @@ public class camera extends Fragment {
         j_capturedPhoto = view.findViewById(R.id.imgv_capturedPhoto);
         j_btn_changecamera = view.findViewById(R.id.btn_changeCamera);
         j_btn_savePhoto = view.findViewById(R.id.btn_savePhoto);
+        j_btn_showGalery = view.findViewById(R.id.btn_showGallery);
 
 
         // 카메라 전환 전면, 후면
@@ -135,7 +138,7 @@ public class camera extends Fragment {
         // 카메라 실행하기
         startCamera();
 
-        // 촬영 버튼 누르면 사진 촬영하기
+        // 사진 촬영하기
         j_btn_capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,10 +153,27 @@ public class camera extends Fragment {
                     j_btn_capture.setText("촬영");
                     j_prv_cameraPreview.setVisibility(VISIBLE);
                     j_capturedPhoto.setVisibility(GONE);
+                    j_btn_savePhoto.setVisibility(GONE);
                 }
             }
         });
+        // 사진 저장하기
+        j_btn_savePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savePicture();
+            }
+        });
         return view;
+        /*
+        j_btn_showGalery.setOnClickListener(new View.OnClickListener() {
+            @Override
+
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, PICK_IMAGE);
+            }
+        });*/
     }
 
     private void startCamera()
@@ -198,7 +218,46 @@ public class camera extends Fragment {
             }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
+    public Bitmap rotateBitmap(File file)
+    {
+        if(file.exists())
+        {
+            //비트맵 불러오기
+            Bitmap tempPhotoBitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
 
+            // 비트맵 회전정보 가져오기
+            ExifInterface exif = null;
+            try {
+                exif = new ExifInterface(file.getAbsolutePath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                int rotate = 0;
+                switch (orientation)
+                {
+                    case ExifInterface.ORIENTATION_ROTATE_90: rotate = 90;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_180: rotate = 180;
+                        break;
+                    case ExifInterface.ORIENTATION_ROTATE_270: rotate = 270;
+                        break;
+                    default: rotate = 0;
+                }
+
+                if (rotate != 0)
+                {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(rotate);
+                    tempPhotoBitmap = Bitmap.createBitmap(tempPhotoBitmap, 0, 0, tempPhotoBitmap.getWidth(), tempPhotoBitmap.getHeight(), matrix, true);
+                }
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+                return(tempPhotoBitmap);
+        }
+        else return null;
+    }
     private void takePicture()
     {
         File tempPhotoFile = new File(requireContext().getCacheDir(), "temp_Photo.jpg");
@@ -208,48 +267,15 @@ public class camera extends Fragment {
                 ContextCompat.getMainExecutor(requireContext()),
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
-                    public void onImageSaved(ImageCapture.@NonNull OutputFileResults outputFileResults) {
-                        if(tempPhotoFile.exists())
-                        {
-                            //비트맵 불러오기
-                            Bitmap tempPhotoBitmap = BitmapFactory.decodeFile(tempPhotoFile.getAbsolutePath());
-
-                            // 비트맵 회전정보 가져오기
-                            ExifInterface exif = null;
-                            try {
-                                exif = new ExifInterface(tempPhotoFile.getAbsolutePath());
-                                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
-                                int rotate = 0;
-                                switch (orientation)
-                                {
-                                    case ExifInterface.ORIENTATION_ROTATE_90: rotate = 90;
-                                    break;
-                                    case ExifInterface.ORIENTATION_ROTATE_180: rotate = 180;
-                                    break;
-                                    case ExifInterface.ORIENTATION_ROTATE_270: rotate = 270;
-                                    break;
-                                    default: rotate = 0;
-                                }
-
-                                if (rotate != 0)
-                                {
-                                    Matrix matrix = new Matrix();
-                                    matrix.postRotate(rotate);
-                                    tempPhotoBitmap = Bitmap.createBitmap(tempPhotoBitmap, 0, 0, tempPhotoBitmap.getWidth(), tempPhotoBitmap.getHeight(), matrix, true);
-                                }
-                            }
-                            catch (Exception e)
-                            {
-                                e.printStackTrace();
-                            }
-
-                            j_capturedPhoto.setImageBitmap(tempPhotoBitmap);
+                    public void onImageSaved(ImageCapture.@NonNull OutputFileResults outputFileResults)
+                    {
+                            j_capturedPhoto.setImageBitmap(rotateBitmap(tempPhotoFile));
                             j_prv_cameraPreview.setVisibility(GONE);
                             j_btn_changecamera.setVisibility(GONE);
                             j_capturedPhoto.setVisibility(VISIBLE);
                             j_btn_capture.setText("다시 찍기");
+                            j_btn_savePhoto.setVisibility(VISIBLE);
                         }
-                    }
 
                     @Override
                     public void onError(@NonNull ImageCaptureException exception) {
@@ -257,10 +283,34 @@ public class camera extends Fragment {
                     }
                 });
     }
-
     private void savePicture()
     {
-        //File cachePhoto = new File(getCacheDir(), "temp_Photo.jpg");
+        File cachePhoto = new File(requireContext().getCacheDir(), "temp_Photo.jpg");
+        if(!cachePhoto.exists()) return;
+
+        // Mediastore에 저장할 이미지의 정보를 저장할 contentValues객체를 생성한다.
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_" + System.currentTimeMillis() + ".jpg");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "img/jpeg");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Camera");
+
+        Uri uri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        if(uri == null) return;
+
+        try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri))
+        {
+            Bitmap bitmap = rotateBitmap(cachePhoto);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            out.flush();
+            Toast.makeText(requireContext(), "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (cachePhoto.exists()) cachePhoto.delete();
+        
+
     }
 
 }
