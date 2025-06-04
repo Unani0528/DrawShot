@@ -1,64 +1,61 @@
 package com.example.approject;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ScrollView;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link tip#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 public class tip extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private ScrollView tipScroll;
+    private TextView tg1, tg2, tg3, tg4, tg5, tg6;
 
     public tip() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment tip.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static tip newInstance(String param1, String param2) {
-        tip fragment = new tip();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_tip, container, false);
+
+        // ScrollView
+        tipScroll = view.findViewById(R.id.tip_scroll);
+
+        // 타겟 텍스트뷰
+        tg1 = view.findViewById(R.id.tg1);
+        tg2 = view.findViewById(R.id.tg2);
+        tg3 = view.findViewById(R.id.tg3);
+        tg4 = view.findViewById(R.id.tg4);
+        tg5 = view.findViewById(R.id.tg5);
+        tg6 = view.findViewById(R.id.tg6);
+
+        // 버튼 리스너 설정
+        setScrollButton(view, R.id.btn1, tg1);
+        setScrollButton(view, R.id.btn2, tg2);
+        setScrollButton(view, R.id.btn3, tg3);
+        setScrollButton(view, R.id.btn4, tg4);
+        setScrollButton(view, R.id.btn5, tg5);
+        setScrollButton(view, R.id.btn6, tg6);
+
+        return view;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_tip, container, false);
+    private void setScrollButton(View parent, int buttonId, final TextView target) {
+        Button button = parent.findViewById(buttonId);
+        button.setOnClickListener(v -> {
+            tipScroll.post(() -> {
+                // ScrollView가 해당 TextView 위치로 스크롤
+                tipScroll.smoothScrollTo(0, target.getTop());
+            });
+        });
     }
 }
