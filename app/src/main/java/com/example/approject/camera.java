@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Camera;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -35,10 +38,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 //import org.jspecify.annotations.NonNull;
 
+import org.jspecify.annotations.NonNull;
+
 import java.io.File;
 import java.io.OutputStream;
-
-import androidx.annotation.NonNull;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -57,9 +60,10 @@ public class camera extends Fragment {
 
     // CameraX관련 변수 선언
     private PreviewView j_prv_cameraPreview;
-    private Button j_btn_capture;
+    private Button j_btn_capture, j_btn_changecamera, j_btn_savePhoto;
     private ImageCapture j_imageCapture;
     private ImageView j_capturedPhoto;
+    private int cameramode = 0;
 
     public camera() {
         // Required empty public constructor
@@ -100,7 +104,26 @@ public class camera extends Fragment {
         j_prv_cameraPreview = view.findViewById(R.id.prv_cameraView);
         j_btn_capture = view.findViewById(R.id.btn_cameraCapture);
         j_capturedPhoto = view.findViewById(R.id.imgv_capturedPhoto);
+        j_btn_changecamera = view.findViewById(R.id.btn_changeCamera);
+        j_btn_savePhoto = view.findViewById(R.id.btn_savePhoto);
 
+
+        // 카메라 전환 전면, 후면
+        j_btn_changecamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (cameramode == 0)
+                {
+                    cameramode = 1;
+                    startCamera();
+                }
+                else
+                {
+                    cameramode = 0;
+                    startCamera();
+                }
+            }
+        });
 
         // 카메라 권환 확인하기
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
@@ -122,6 +145,8 @@ public class camera extends Fragment {
                 }
                 else
                 {
+                    j_btn_changecamera.setVisibility(VISIBLE);
+                    j_btn_savePhoto.setVisibility(GONE);
                     j_btn_capture.setText("촬영");
                     j_prv_cameraPreview.setVisibility(VISIBLE);
                     j_capturedPhoto.setVisibility(GONE);
@@ -133,112 +158,97 @@ public class camera extends Fragment {
 
     private void startCamera()
     {
-        ListenableFuture<ProcessCameraProvider> cameraProviderFuture =
-                ProcessCameraProvider.getInstance(requireContext());
-
+        ListenableFuture<ProcessCameraProvider> cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext());
+        // cameraProviderFuture ProcesCameraProvider가 실행 가능한지 확인하는것
         cameraProviderFuture.addListener(() ->
         {
             try
             {
+                // cameraProviderFuture는 미래에 카메라를 쓸 수 있는지 확인하는 비동기식 객체이다.
+                // cameraProviderFuture.get()은 카메라가 사용이 가능해진다면(사용할 준비가 끝나면) 알려주는동작이다.
+                // 이 코드는 cameraProviderFuture라는 객체를 통해 카메라가 사용가능한 준비가 끝나면 알려주고 그 뒤 cameraProvider 객체를 생성하는 것이다.
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
 
-                /* Preview : 카메라 데이터를 앱에 전달
-                   PreviewView : 전달받은 영상을 실제 화면에 보여주는 역할
+                // 카메라를 화면에 보여주기 위해서 Preview 객체를 생성한다.
+                // Preview 객체는 카메라 데이터를 앱에 전달하는 역할을 한다.
+                Preview cameraPreview = new Preview.Builder().build();
 
-                   Preview와 PreviewView 를 연결해서 화면에 보여주도록 하는 코드
-                 */
-                Preview preview = new Preview.Builder().build();
-                preview.setSurfaceProvider(j_prv_cameraPreview.getSurfaceProvider());
+                // 카메라를 어디에 보여줄지 설정한다.
+                //j_prv_cameraPreview 에서 cameraPreview를 받아서 보여준다.
+                cameraPreview.setSurfaceProvider(j_prv_cameraPreview.getSurfaceProvider());
 
-                // 이미지 캡쳐 Usecase 생성
                 j_imageCapture = new ImageCapture.Builder().build();
+                CameraSelector cameraSelector;
+                if (cameramode == 0)
+                {
+                    cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
+                }
+                else
+                {
+                    cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA;
+                }
 
-                // 기본 후면카메라 사용하기
-                CameraSelector cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA;
-
-                // 기존 연결 해제하고 새로 연결하기
                 cameraProvider.unbindAll();
-                cameraProvider.bindToLifecycle(
-                        getViewLifecycleOwner(), cameraSelector, preview, j_imageCapture);
+                cameraProvider.bindToLifecycle(getViewLifecycleOwner(), cameraSelector, cameraPreview, j_imageCapture);
 
-            } catch (Exception e) {
+            }
+            catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
-    // TODO:사진촬영시, 바로 저장되게 하지 말고 화면에 보여주고, 저장 버튼을 누르면 저장하게 하기
-    private void takePicture() {
-        // 1. ContentValues 선언
-        ContentValues values = new ContentValues();
-        String filename = "IMG_" + System.currentTimeMillis() + ".jpg";
-        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+    private void takePicture()
+    {
+        File tempPhotoFile = new File(requireContext().getCacheDir(), "temp_Photo.jpg");
+        ImageCapture.OutputFileOptions tempOutputOptions = new ImageCapture.OutputFileOptions.Builder(tempPhotoFile).build();
 
-        // 2. OutputFileOptions 생성
-        ImageCapture.OutputFileOptions outputOptions =
-                new ImageCapture.OutputFileOptions.Builder(
-                        requireContext().getContentResolver(),
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        values
-                ).build();
-
-        // 3. takePicture 호출
-        j_imageCapture.takePicture(
-                outputOptions,
+        j_imageCapture.takePicture(tempOutputOptions,
                 ContextCompat.getMainExecutor(requireContext()),
                 new ImageCapture.OnImageSavedCallback() {
                     @Override
-                    public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
-                        Uri savedUri = outputFileResults.getSavedUri();
-                        j_capturedPhoto.setImageURI(savedUri);
-                        j_prv_cameraPreview.setVisibility(View.GONE);
-                        j_capturedPhoto.setVisibility(View.VISIBLE);
-                        j_btn_capture.setText("다시 찍기");
-                    }
-                    @Override
-                    public void onError(@NonNull ImageCaptureException exception) {
-                        // 에러 처리
-                    }
-                }
-        );
-    }
-
-    /*
-    private void takepicture()
-    {
-        // 저장할 파일 생성
-        File photoFile = new File(requireContext().getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
-
-        // Output 옵션 생성
-        ImageCapture.OutputFileOptions outputOptions = new ImageCapture.OutputFileOptions.Builder(photoFile).build();
-
-        // 사진 촬영하기
-        j_imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(requireContext()),
-                new ImageCapture.OnImageSavedCallback() {
-                    @Override
                     public void onImageSaved(ImageCapture.@NonNull OutputFileResults outputFileResults) {
-                        // 사진을 bitmap에 저장하기
-                        Bitmap bitmap = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
-                        // 사진 저장하기
-                        ContentValues values = new ContentValues();
-                        String filename = "IMG_" + System.currentTimeMillis() + ".jpy"
-                        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
-                        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
+                        if(tempPhotoFile.exists())
+                        {
+                            //비트맵 불러오기
+                            Bitmap tempPhotoBitmap = BitmapFactory.decodeFile(tempPhotoFile.getAbsolutePath());
 
-                        Uri uri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                        try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri)) {
-                            bitmap.compress(Bitmap.CompressFormat.JPEG,100, out);
-                        }catch (Exception e){
-                            e.printStackTrace();
+                            // 비트맵 회전정보 가져오기
+                            ExifInterface exif = null;
+                            try {
+                                exif = new ExifInterface(tempPhotoFile.getAbsolutePath());
+                                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+                                int rotate = 0;
+                                switch (orientation)
+                                {
+                                    case ExifInterface.ORIENTATION_ROTATE_90: rotate = 90;
+                                    break;
+                                    case ExifInterface.ORIENTATION_ROTATE_180: rotate = 180;
+                                    break;
+                                    case ExifInterface.ORIENTATION_ROTATE_270: rotate = 270;
+                                    break;
+                                    default: rotate = 0;
+                                }
+
+                                if (rotate != 0)
+                                {
+                                    Matrix matrix = new Matrix();
+                                    matrix.postRotate(rotate);
+                                    tempPhotoBitmap = Bitmap.createBitmap(tempPhotoBitmap, 0, 0, tempPhotoBitmap.getWidth(), tempPhotoBitmap.getHeight(), matrix, true);
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                e.printStackTrace();
+                            }
+
+                            j_capturedPhoto.setImageBitmap(tempPhotoBitmap);
+                            j_prv_cameraPreview.setVisibility(GONE);
+                            j_btn_changecamera.setVisibility(GONE);
+                            j_capturedPhoto.setVisibility(VISIBLE);
+                            j_btn_capture.setText("다시 찍기");
                         }
-
-                        j_capturedPhoto.setImageBitmap(bitmap);
-                        j_cameraPreview.setVisibility(GONE);
-                        j_capturedPhoto.setVisibility(VISIBLE);
-                        j_btn_capture.setText("다시 찍기");
                     }
 
                     @Override
@@ -246,6 +256,11 @@ public class camera extends Fragment {
 
                     }
                 });
-    }*/
+    }
+
+    private void savePicture()
+    {
+        //File cachePhoto = new File(getCacheDir(), "temp_Photo.jpg");
+    }
 
 }

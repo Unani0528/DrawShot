@@ -28,15 +28,6 @@
         android:backgroundTint="@android:color/holo_red_light"
         android:text="촬영"></Button>
 
-    <ImageView
-        android:id="@+id/imgv_gallery"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_gravity="bottom|left"
-        android:layout_marginLeft="50dp"
-        android:layout_marginBottom="20dp"
-        android:background="@color/white"></ImageView>
-
     <Button
         android:id="@+id/btn_changeCamera"
         android:layout_width="wrap_content"
@@ -45,4 +36,14 @@
         android:layout_margin="20dp"
         android:backgroundTint="#333333"
         android:text="카메라 전환"></Button>
+    <Button
+        android:id="@+id/btn_savePhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_margin="20dp"
+        android:backgroundTint="#333333"
+        android:text="사진 저장"
+        android:visibility="gone"
+        ></Button>
 </FrameLayout>
