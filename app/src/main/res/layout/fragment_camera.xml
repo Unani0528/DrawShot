@@ -44,6 +44,7 @@
         android:layout_margin="20dp"
         android:backgroundTint="#333333"
         android:text="카메라 전환"></Button>
+
     <Button
         android:id="@+id/btn_savePhoto"
         android:layout_width="wrap_content"
@@ -52,6 +53,5 @@
         android:layout_margin="20dp"
         android:backgroundTint="#333333"
         android:text="사진 저장"
-        android:visibility="gone"
-        ></Button>
+        android:visibility="gone"></Button>
 </FrameLayout>

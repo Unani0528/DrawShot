@@ -1,12 +1,26 @@
 package com.example.approject;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.camera.core.imagecapture.JpegBytes2Disk;
 import androidx.fragment.app.Fragment;
 
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import java.io.IOException;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +37,10 @@ public class editpicture extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button j_btn_selectpicture;
+    private Bitmap galleryBitmap = null;
+    private ActivityResultLauncher<String> galleryLauncher;
 
     public editpicture() {
         // Required empty public constructor
@@ -59,6 +77,30 @@ public class editpicture extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_editpicture, container, false);
+        View view = inflater.inflate(R.layout.fragment_editpicture, container, false);
+        j_btn_selectpicture = view.findViewById(R.id.picture_btn);
+        j_btn_selectpicture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                galleryLauncher.launch("image/*");
+            }
+        });
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        if (uri != null) {
+                            try {
+                                Bitmap bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), uri);
+                                galleryBitmap = bitmap;
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        );
+        return view;
     }
 }

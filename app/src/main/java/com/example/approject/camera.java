@@ -115,13 +115,10 @@ public class camera extends Fragment {
         j_btn_changecamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (cameramode == 0)
-                {
+                if (cameramode == 0) {
                     cameramode = 1;
                     startCamera();
-                }
-                else
-                {
+                } else {
                     cameramode = 0;
                     startCamera();
                 }
@@ -142,12 +139,9 @@ public class camera extends Fragment {
         j_btn_capture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(j_btn_capture.getText().toString().equals("촬영"))
-                {
+                if (j_btn_capture.getText().toString().equals("촬영")) {
                     takePicture();
-                }
-                else
-                {
+                } else {
                     j_btn_changecamera.setVisibility(VISIBLE);
                     j_btn_savePhoto.setVisibility(GONE);
                     j_btn_capture.setText("촬영");
@@ -164,16 +158,16 @@ public class camera extends Fragment {
                 savePicture();
             }
         });
-        return view;
-        /*
+
         j_btn_showGalery.setOnClickListener(new View.OnClickListener() {
             @Override
 
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(intent, PICK_IMAGE);
+                startActivity(intent);
             }
-        });*/
+        });
+        return view;
     }
 
     private void startCamera()
