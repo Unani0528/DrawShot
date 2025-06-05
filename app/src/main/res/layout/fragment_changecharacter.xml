@@ -25,9 +25,9 @@
         <RadioGroup
             android:id="@+id/character_RadioGroup"
             android:layout_width="match_parent"
-            android:layout_height="328dp"
-            android:layout_marginTop="70dp"
-            android:orientation="horizontal">
+            android:layout_height="352dp"
+            android:layout_marginTop="70dp">
+
 
 
             <RadioButton
@@ -48,6 +48,16 @@
                 android:layout_height="150dp"
                 android:background="@drawable/minions"
                 android:gravity="top|left" />
+
+
+            <RadioButton
+                android:id="@+id/radio_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="점"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:textSize="24dp" />
 
         </RadioGroup>
 

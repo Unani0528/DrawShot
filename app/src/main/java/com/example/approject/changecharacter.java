@@ -46,8 +46,10 @@ public class changecharacter extends Fragment {
 
         if (selectedCharacter.equals("minion")) {
             characterRadioGroup.check(R.id.radio_minion);
-        } else {
+        } else if (selectedCharacter.equals("du")){
             characterRadioGroup.check(R.id.radio_du);
+        } else{
+            characterRadioGroup.check(R.id.radio_point);
         }
 
         btnApply.setOnClickListener(v -> {
@@ -56,6 +58,10 @@ public class changecharacter extends Fragment {
 
             if (selectedId == R.id.radio_minion) {
                 character = "minion";
+            }
+
+            if (selectedId == R.id.radio_point) {
+                character = "point";
             }
 
             prefs.edit().putString("selected_character", character).apply();

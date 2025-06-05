@@ -1,1 +1,56 @@
+# Gradle 관련
 .gradle/
+*.gradle
+build/
+*/build/
+.gradle/cache/
+.gradle/daemon/
+.gradle/registry/
+
+# 로컬 환경 설정
+local.properties
+
+# 로그/운영체제 파일
+*.log
+
+# Android Studio/IntelliJ 생성 파일
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.app
+output.json
+
+# IDE 설정
+*.iml
+.idea/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# 키스토어 파일
+*.jks
+*.keystore
+
+# 구글 서비스 관련
+google-services.json
+crashlytics.properties
+fabric.properties
+
+# 프로파일링/바이너리/환경 변수
+*.hprof
+*.so
+.env
+
+# macOS 시스템 파일
+*.DS_Store
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
