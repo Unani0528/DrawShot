@@ -6,8 +6,5 @@
     <item
         android:title="그림 그리기"></item>
     <item
-        android:title="배경">
-    </item>
-    <item
         android:title="꿀팁"></item>
 </menu>

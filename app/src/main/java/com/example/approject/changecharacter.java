@@ -1,5 +1,7 @@
 package com.example.approject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -7,58 +9,65 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link changecharacter#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class changecharacter extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private RadioGroup characterRadioGroup;
+    private Button btnApply;
 
     public changecharacter() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment changecharacter.
-     */
-    // TODO: Rename and change types and number of parameters
     public static changecharacter newInstance(String param1, String param2) {
         changecharacter fragment = new changecharacter();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString("param1", param1);
+        args.putString("param2", param2);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_changecharacter, container, false);
+        View view = inflater.inflate(R.layout.fragment_changecharacter, container, false);
+
+        characterRadioGroup = view.findViewById(R.id.character_RadioGroup);
+        btnApply = view.findViewById(R.id.btnApply);
+
+        // 기존 선택된 캐릭터 표시
+        SharedPreferences prefs = requireContext().getSharedPreferences("CharacterPrefs", Context.MODE_PRIVATE);
+        String selectedCharacter = prefs.getString("selected_character", "du");
+
+        if (selectedCharacter.equals("minion")) {
+            characterRadioGroup.check(R.id.radio_minion);
+        } else if (selectedCharacter.equals("du")){
+            characterRadioGroup.check(R.id.radio_du);
+        } else{
+            characterRadioGroup.check(R.id.radio_point);
+        }
+
+        btnApply.setOnClickListener(v -> {
+            int selectedId = characterRadioGroup.getCheckedRadioButtonId();
+            String character = "du"; // 기본값
+
+            if (selectedId == R.id.radio_minion) {
+                character = "minion";
+            }
+
+            if (selectedId == R.id.radio_point) {
+                character = "point";
+            }
+
+            prefs.edit().putString("selected_character", character).apply();
+            Toast.makeText(requireContext(), "캐릭터가 저장되었습니다!", Toast.LENGTH_SHORT).show();
+        });
+
+        return view;
     }
 }

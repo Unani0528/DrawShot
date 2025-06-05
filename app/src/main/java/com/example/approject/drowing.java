@@ -2,6 +2,7 @@ package com.example.approject;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
@@ -33,7 +34,6 @@ public class drowing extends Fragment {
     private Button colorButton, saveButton; // 색상/저장 버튼
     private SeekBar thicknessSeekBar; // 굵기 조절
     private Switch backgroundSwitch; // 배경 투명 여부
-    private float sen = 1.0f;
 
     // 이동 및 그리기
     private float dx = 0, dy = 0;
@@ -50,6 +50,8 @@ public class drowing extends Fragment {
     private Sensor accelerometer;
     private float lastX, lastY, lastZ;
     private long lastShakeTime = 0;
+
+
 
     // 주기적으로 플레이어 이동
     private final Runnable moveRunnable = new Runnable() {
@@ -76,39 +78,87 @@ public class drowing extends Fragment {
         thicknessSeekBar = root.findViewById(R.id.thicknessSeekBar);
         backgroundSwitch = root.findViewById(R.id.backgroundSwitch);
 
+
+        // SharedPreferences에서 선택된 캐릭터 불러오기
+        SharedPreferences prefs = requireContext().getSharedPreferences("CharacterPrefs", Context.MODE_PRIVATE);
+        String selectedCharacter = prefs.getString("selected_character", "du");
+
+        // 선택된 캐릭터에 따라 이미지 설정
+        if (selectedCharacter.equals("minion")) {
+            player.setImageResource(R.drawable.minions);
+        } else if(selectedCharacter.equals("du")){
+            player.setImageResource(R.drawable.dudu);
+        } else {
+            player.setImageResource(R.drawable.point);
+        }
+
         // 조이스틱 움직임 설정
         joystickView.setJoystickListener((xPercent, yPercent) -> {
-            dx = xPercent * 10 * sen;
-            dy = yPercent * 10 * sen;
+            dx = xPercent * 10 * Global.sen;
+            dy = yPercent * 10 * Global.sen;
         });
 
         handler.post(moveRunnable); // 반복 이동 시작
 
         // 그리기 버튼 터치 시 애니메이션 + 경로 시작
-        drawButton.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    isDrawing = true;
-                    player.setBackgroundResource(R.drawable.du_drawing_animation); // 애니메이션 시작
-                    frameAnimation = (AnimationDrawable) player.getBackground();
-                    frameAnimation.start();
-                    player.setImageResource(0); // static 이미지 제거
+        if(selectedCharacter.equals("minion")||selectedCharacter.equals("du")) {
+            drawButton.setOnTouchListener((v, event) -> {
 
-                    drawingView.startNewPath(
-                            player.getX() + player.getWidth() / 2f,
-                            player.getY() + player.getHeight() / 2f
-                    );
-                    return true;
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isDrawing = true;
 
-                case MotionEvent.ACTION_UP:
-                    isDrawing = false;
-                    if (frameAnimation != null) frameAnimation.stop();
-                    player.setBackgroundResource(0);
-                    player.setImageResource(R.drawable.dudu); // static 이미지 복구
-                    return true;
-            }
-            return false;
-        });
+                        if (selectedCharacter.equals("minion")) {
+                            player.setBackgroundResource(R.drawable.minions_drawing_animation);
+                        } else {
+                            player.setBackgroundResource(R.drawable.du_drawing_animation);
+                        }
+
+                        frameAnimation = (AnimationDrawable) player.getBackground();
+                        frameAnimation.start();
+                        player.setImageResource(0); // static 이미지 제거
+
+                        drawingView.startNewPath(
+                                player.getX() + player.getWidth() / 2f,
+                                player.getY() + player.getHeight() / 2f
+                        );
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        isDrawing = false;
+                        if (frameAnimation != null) frameAnimation.stop();
+                        player.setBackgroundResource(0);
+
+                        // 캐릭터별 정적 이미지 복원
+                        if (selectedCharacter.equals("minion")) {
+                            player.setImageResource(R.drawable.minions);
+                        } else {
+                            player.setImageResource(R.drawable.dudu);
+                        }
+                        return true;
+                }
+                return false;
+            });
+        } else {
+            drawButton.setOnTouchListener((v, event) -> {
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        isDrawing = true;
+                        drawingView.startNewPath(
+                                player.getX() + player.getWidth() / 2f,
+                                player.getY() + player.getHeight() / 2f
+                        );
+                        return true;
+
+                    case MotionEvent.ACTION_UP:
+                        isDrawing = false;
+                        return true;
+                }
+                return false;
+            });
+        }
+
 
         // 색상 선택 버튼
         colorButton.setOnClickListener(v -> showColorPicker());
@@ -126,7 +176,15 @@ public class drowing extends Fragment {
         // 저장 버튼
         saveButton.setOnClickListener(v -> {
             boolean isTransparent = backgroundSwitch.isChecked();
-            drawingView.saveToGallery(getContext(), isTransparent);
+            try {
+                drawingView.saveToGallery(getContext(), isTransparent);
+
+                new AlertDialog.Builder(getContext())
+                        .setTitle("저장 완료")
+                        .setMessage("사진이 갤러리에 저장되었습니다.")
+                        .setPositiveButton("확인", null)
+                        .show();
+            } catch (Exception e) {}
         });
 
         // 센서 등록 (흔들면 clear)

@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".changecharacter">
+    tools:context=".team">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="캐릭터 변경" />
+        android:orientation="vertical"
+        android:paddingLeft="30dp"
+        android:paddingTop="20dp"
+        android:paddingRight="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="캐릭터 변경"
+            android:textSize="35sp"
+            android:textStyle="bold"></TextView>
+
+        <RadioGroup
+            android:id="@+id/character_RadioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="352dp"
+            android:layout_marginTop="70dp">
+
+
+            <RadioButton
+                android:id="@+id/radio_du"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/dudu"
+                android:gravity="top|left" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <RadioButton
+                android:id="@+id/radio_minion"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:background="@drawable/minions"
+                android:gravity="top|left" />
+
+            <RadioButton
+                android:id="@+id/radio_point"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="점" />
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/btnApply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="적용하기"
+            android:textColor="#000000"
+            android:backgroundTint="#D9D9D9"/>
+
+    </LinearLayout>
 
 </FrameLayout>

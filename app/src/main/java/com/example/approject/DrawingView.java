@@ -23,6 +23,8 @@ public class DrawingView extends View {
 
     private Bitmap backgroundBitmap;  // 배경 이미지
 
+
+
     public DrawingView(Context context, AttributeSet attrs) {       //커스텀 뷰 사용시 있어야하는 생성자
         super(context, attrs);
         init();  // 초기 설정
@@ -120,6 +122,27 @@ public class DrawingView extends View {
             Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show();
         }
     }
+
+    public Bitmap exportToBitmap() {
+        if (getWidth() == 0 || getHeight() == 0) return null;
+
+        Bitmap resultBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(resultBitmap);
+
+        // 배경 그리기
+        if (backgroundBitmap != null) {
+            // 배경 이미지를 뷰 크기에 맞게 스케일해서 그릴 수도 있음 (필요시)
+            canvas.drawBitmap(backgroundBitmap, 0, 0, null);
+        }
+
+        // 그림 그리기
+        for (int i = 0; i < paths.size(); i++) {
+            canvas.drawPath(paths.get(i), paints.get(i));
+        }
+
+        return resultBitmap;
+    }
+
 
     // 배경 이미지 설정
     public void setBackgroundImage(Bitmap bitmap) {
