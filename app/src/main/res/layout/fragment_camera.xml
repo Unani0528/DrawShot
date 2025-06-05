@@ -43,7 +43,7 @@
         android:layout_gravity="right|bottom"
         android:layout_margin="20dp"
         android:backgroundTint="#333333"
-        android:text="카메라 전환"></Button>
+        android:text="전환"></Button>
 
     <Button
         android:id="@+id/btn_savePhoto"

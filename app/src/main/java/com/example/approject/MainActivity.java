@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (id == R.id.menu_tip) {
                     nextfragment = new tip();
                 }
+                j_drwmainmenu.closeDrawer(GravityCompat.END);
                 getSupportFragmentManager().beginTransaction()
                         .setCustomAnimations(R.anim.slide_in_r, R.anim.fade_out_r, R.anim.fade_in_r, R.anim.slide_out_r)
                         .replace(R.id.FMV_Common, nextfragment).addToBackStack(null).commit();
