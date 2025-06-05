@@ -15,6 +15,7 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -108,6 +109,27 @@ public class camera extends Fragment {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // 권한이 이미 허용된 경우에만 바로 음성인식 시작
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+            voiceRecognizer.startListening(sttIntent);
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if(voiceRecognizer != null)
+        {
+            voiceRecognizer.destroy();
+            voiceRecognizer = null;
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -154,12 +176,24 @@ public class camera extends Fragment {
         voiceRecognizer = SpeechRecognizer.createSpeechRecognizer(getContext());
         voiceRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
-            public void onResults(Bundle result)
-            {
-                ArrayList<String> matches = result.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
+            public void onResults(Bundle results) {
+                ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null) {
+                    for (String result : matches) {
+                        if (result.contains("김치")) { // "특정단어"를 원하는 단어로 바꿔주세요
+                            doMyFunction(); // 원하는 기능 실행
+                            break;
+                        } else if (result.contains("치즈")) {
+                            doMyFunction();
+                            break;
+                        }
+                    }
+                }
+                voiceRecognizer.startListening(sttIntent);
             }
 
+
+            @Override
             public void onReadyForSpeech(Bundle params) {
 
             }
@@ -186,13 +220,9 @@ public class camera extends Fragment {
 
             @Override
             public void onError(int error) {
-
+                voiceRecognizer.startListening(sttIntent);
             }
 
-            @Override
-            public void onResults(Bundle results) {
-
-            }
 
             @Override
             public void onPartialResults(Bundle partialResults) {
@@ -203,6 +233,7 @@ public class camera extends Fragment {
             public void onEvent(int eventType, Bundle params) {
 
             }
+
         });
 
 
@@ -380,5 +411,14 @@ public class camera extends Fragment {
         
 
     }
+
+    private void doMyFunction() {
+        // 예시: 토스트 메시지 띄우기
+        Toast.makeText(getContext(), "특정 단어가 감지되었습니다!", Toast.LENGTH_SHORT).show();
+        takePicture();
+        savePicture();
+
+    }
+
 
 }
