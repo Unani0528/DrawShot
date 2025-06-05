@@ -7,6 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +17,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class voice extends Fragment {
+    static int kimchicheck = 0;
+    static int cheesecheck = 0;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -59,6 +64,51 @@ public class voice extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_voice, container, false);
+        View view = inflater.inflate(R.layout.fragment_voice, container, false);
+
+        Switch j_voice_kimchi = view.findViewById(R.id.sw_voice_kimchi);
+        Switch j_voice_cheeze = view.findViewById(R.id.sw_voice_cheeze);
+        if(kimchicheck != 0) j_voice_kimchi.setChecked(true);
+        if(cheesecheck != 0) j_voice_cheeze.setChecked(true);
+        // 김치 버튼 누르면 김치 추가 제거
+        j_voice_kimchi.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked)
+            {
+                if(!voicekeywords.keywordList.contains(("김치"))){
+                    kimchicheck = 1;
+                    voicekeywords.keywordList.add("김치");
+                    Toast.makeText(getContext(),"음성인식 키워드에 '김치'가 추가됩니다.", Toast.LENGTH_SHORT).show();
+                }
+
+            }else if(voicekeywords.keywordList.contains("김치")){
+                kimchicheck = 0;
+                voicekeywords.keywordList.remove("김치");
+                Toast.makeText(getContext(),"음성인식 키워드에 '김치'가 제거됩니다.", Toast.LENGTH_SHORT).show();
+            }
+            }
+        });
+        // 치즈 버튼 누르면 치즈 추가 제거
+        j_voice_cheeze.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked)
+                {
+                    if(!voicekeywords.keywordList.contains(("치즈"))){
+                        cheesecheck = 1;
+                        voicekeywords.keywordList.add("치즈");
+                        Toast.makeText(getContext(),"음성인식 키워드에 '치즈'가 추가됩니다.", Toast.LENGTH_SHORT).show();
+                    }
+
+                }else if(voicekeywords.keywordList.contains("치즈")){
+                    cheesecheck = 0;
+                    voicekeywords.keywordList.remove("치즈");
+                    Toast.makeText(getContext(),"음성인식 키워드에 '김치'가 제거됩니다.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+        });
+        return view;
     }
 }

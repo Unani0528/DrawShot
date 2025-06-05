@@ -6,9 +6,36 @@
     tools:context=".voice">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="음성인식 키워드 설정" />
-
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_horizontal">
+        <TextView
+            android:layout_margin="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="사진촬영시 사용할\n음성인식 키워드 선택"
+            android:textAlignment="center"
+            android:textStyle="bold"
+            android:textSize="30sp">
+        </TextView>
+        <Switch
+            android:id="@+id/sw_voice_kimchi"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="김치">
+        </Switch>
+        <Switch
+            android:id="@+id/sw_voice_cheeze"
+            android:layout_margin="10dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="치즈">
+        </Switch>
+    </LinearLayout>
 </FrameLayout>

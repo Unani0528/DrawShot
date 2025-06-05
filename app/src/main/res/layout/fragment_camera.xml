@@ -23,7 +23,7 @@
         android:id="@+id/btn_showGallery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="갤러리 보기"
+        android:text="갤러리"
         android:layout_gravity="bottom|left"
         android:layout_margin="20dp"
         android:backgroundTint="#333333"></Button>

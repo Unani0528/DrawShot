@@ -132,6 +132,20 @@ public class camera extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // 권한 확인하고 요청하기
+        String[] permissions = {
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+        };
+
+        ActivityCompat.requestPermissions(
+                getActivity(),
+                permissions,
+                1000
+        );
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_camera, container, false);
         j_prv_cameraPreview = view.findViewById(R.id.prv_cameraView);
@@ -181,10 +195,14 @@ public class camera extends Fragment {
                 if (matches != null) {
                     for (String result : matches) {
                         if (result.contains("김치")) { // "특정단어"를 원하는 단어로 바꿔주세요
-                            doMyFunction(); // 원하는 기능 실행
+                            if (voicekeywords.keywordList.contains("김치")){
+                                doMyFunction(); // 원하는 기능 실행
+                            }
                             break;
                         } else if (result.contains("치즈")) {
-                            doMyFunction();
+                            if (voicekeywords.keywordList.contains("치즈")){
+                                doMyFunction();
+                            }
                             break;
                         }
                     }
@@ -411,10 +429,9 @@ public class camera extends Fragment {
         
 
     }
-
     private void doMyFunction() {
         // 예시: 토스트 메시지 띄우기
-        Toast.makeText(getContext(), "특정 단어가 감지되었습니다!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "음성인식으로 사진을 촬영합니다.", Toast.LENGTH_SHORT).show();
         takePicture();
         savePicture();
 

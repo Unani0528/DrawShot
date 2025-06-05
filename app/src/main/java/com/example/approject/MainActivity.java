@@ -1,11 +1,13 @@
 package com.example.approject;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -15,10 +17,14 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.navigation.NavigationView;
+
 public class MainActivity extends AppCompatActivity {
     // 변수 선언부
     ImageButton j_camera, j_home, j_setting;
     LinearLayout j_bottom_lo;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         // 메인메뉴 하단 메뉴 레이아웃(버튼 누를때 마다 이미지 바뀌게 만들려고 만듦)
         j_bottom_lo = findViewById(R.id.lo_bottombtns);
 
+        // 우측 메뉴버튼
+        NavigationView rightmenu = findViewById(R.id.rightmenu_main);
+
+        // 아래 카메라 버튼
         j_camera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 j_bottom_lo.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.img_bottombtn_camera));
             }
         });
+        // 아래 홈 버튼
         j_home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
                 j_bottom_lo.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.img_bottombtn_home));
             }
         });
+        // 아래 설정으로 이동버튼
         j_setting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +88,25 @@ public class MainActivity extends AppCompatActivity {
                         .replace(R.id.FMV_Common, nextfragment).addToBackStack(null).commit();
                 j_bottom_lo.setBackground(ContextCompat.getDrawable(MainActivity.this, R.drawable.img_bottombtn_setting));
 
+            }
+        });
+
+        rightmenu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Fragment nextfragment = null;
+                int id = item.getItemId();
+                if (id == R.id.menu_editpic) {
+                    nextfragment = new editpicture();
+                } else if (id == R.id.menu_paint) {
+                    nextfragment = new drowing();
+                } else if (id == R.id.menu_tip) {
+                    nextfragment = new tip();
+                }
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(R.anim.slide_in_r, R.anim.fade_out_r, R.anim.fade_in_r, R.anim.slide_out_r)
+                        .replace(R.id.FMV_Common, nextfragment).addToBackStack(null).commit();
+                return true;
             }
         });
 
