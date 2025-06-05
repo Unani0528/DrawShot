@@ -1,11 +1,14 @@
 package com.example.approject;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.view.View;
 import android.os.Environment;
@@ -13,6 +16,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class DrawingView extends View {
@@ -110,7 +114,25 @@ public class DrawingView extends View {
         if (!directory.exists()) {
             directory.mkdirs();
         }
+        // 윤환
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "drawing_"+System.currentTimeMillis()+".png");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "img/png");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Drawshot");
 
+        Uri uri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        if(uri == null) return;
+
+        try (OutputStream out = getContext().getContentResolver().openOutputStream(uri)) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Toast.makeText(context, "저장 완료: " + values.get(MediaStore.Images.Media.RELATIVE_PATH), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show();
+        }
+        // 윤환
+        /*
         String filename = "drawing_" + System.currentTimeMillis() + ".png";
         File file = new File(directory, filename);
 
@@ -120,8 +142,37 @@ public class DrawingView extends View {
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(context, "저장 실패", Toast.LENGTH_SHORT).show();
-        }
+        }*/
     }
+    /*private void savePicture()
+    {
+        File cachePhoto = new File(requireContext().getCacheDir(), "temp_Photo.jpg");
+        if(!cachePhoto.exists()) return;
+
+        // Mediastore에 저장할 이미지의 정보를 저장할 contentValues객체를 생성한다.
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_" + System.currentTimeMillis() + ".jpg");
+        values.put(MediaStore.Images.Media.MIME_TYPE, "img/jpeg");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Camera");
+
+        Uri uri = requireContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        if(uri == null) return;
+
+        try (OutputStream out = requireContext().getContentResolver().openOutputStream(uri))
+        {
+            Bitmap bitmap = rotateBitmap(cachePhoto);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+
+            out.flush();
+            Toast.makeText(requireContext(), "사진이 저장되었습니다.", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (cachePhoto.exists()) cachePhoto.delete();
+
+
+    }*/
 
     public Bitmap exportToBitmap() {
         if (getWidth() == 0 || getHeight() == 0) return null;

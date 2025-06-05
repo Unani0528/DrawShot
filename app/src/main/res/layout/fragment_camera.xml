@@ -52,6 +52,6 @@
         android:layout_gravity="right|bottom"
         android:layout_margin="20dp"
         android:backgroundTint="#333333"
-        android:text="사진 저장"
+        android:text="저장"
         android:visibility="gone"></Button>
 </FrameLayout>

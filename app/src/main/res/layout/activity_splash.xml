@@ -14,18 +14,10 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="DRAWSHOT"
-            android:textColor="@color/white"
-            android:textSize="40sp"
-            android:textStyle="bold"></TextView>
 
         <ImageView
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
             android:src="@drawable/img_splash"></ImageView>
     </LinearLayout>

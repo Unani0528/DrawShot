@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 public class SplashActivity extends AppCompatActivity {
 
     //변수 선언부
-    private static int splashtime = 2000;
+    private static int splashtime = 700;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
