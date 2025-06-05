@@ -65,23 +65,6 @@ public class setting extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
 
-
-        // 다크모드 설정하기
-        Switch j_swdark = view.findViewById(R.id.sw_darkmode);
-        j_swdark.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked)
-                {
-
-                }
-                else
-                {
-
-                }
-            }
-        });
-
         // 캐릭터 변경
         LinearLayout j_changechar = view.findViewById(R.id.lo_cngchar);
         j_changechar.setOnClickListener(new View.OnClickListener() {

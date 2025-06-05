@@ -146,7 +146,13 @@ public class DrawingView extends View {
 
     // 배경 이미지 설정
     public void setBackgroundImage(Bitmap bitmap) {
-        backgroundBitmap = bitmap;
+        if (getWidth() == 0 || getHeight() == 0) {
+            // View가 아직 레이아웃되지 않았으면 post()로 지연 처리
+            post(() -> setBackgroundImage(bitmap));
+            return;
+        }
+
+        backgroundBitmap = Bitmap.createScaledBitmap(bitmap, getWidth(), getHeight(), true);
         invalidate();
     }
 }
