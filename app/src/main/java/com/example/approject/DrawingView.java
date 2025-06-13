@@ -107,7 +107,6 @@ public class DrawingView extends View {
 
         // 지금까지 그려진 그림을 그린다
         draw(canvas);
-
         // 저장 경로 설정(MyDrawings 폴더에 넣을거)
         File directory = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "MyDrawings");
@@ -118,7 +117,7 @@ public class DrawingView extends View {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.DISPLAY_NAME, "drawing_"+System.currentTimeMillis()+".png");
         values.put(MediaStore.Images.Media.MIME_TYPE, "img/png");
-        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + "/Drawshot");
+        values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES);
 
         Uri uri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 

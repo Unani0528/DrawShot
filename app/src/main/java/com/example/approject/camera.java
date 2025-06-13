@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.camera.core.AspectRatio;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageCapture;
 import androidx.camera.core.ImageCaptureException;
@@ -137,8 +138,7 @@ public class camera extends Fragment {
         String[] permissions = {
                 Manifest.permission.CAMERA,
                 Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_MEDIA_IMAGES
         };
 
         ActivityCompat.requestPermissions(
@@ -308,13 +308,13 @@ public class camera extends Fragment {
 
                 // 카메라를 화면에 보여주기 위해서 Preview 객체를 생성한다.
                 // Preview 객체는 카메라 데이터를 앱에 전달하는 역할을 한다.
-                Preview cameraPreview = new Preview.Builder().build();
+                Preview cameraPreview = new Preview.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
 
                 // 카메라를 어디에 보여줄지 설정한다.
                 //j_prv_cameraPreview 에서 cameraPreview를 받아서 보여준다.
                 cameraPreview.setSurfaceProvider(j_prv_cameraPreview.getSurfaceProvider());
 
-                j_imageCapture = new ImageCapture.Builder().build();
+                j_imageCapture = new ImageCapture.Builder().setTargetAspectRatio(AspectRatio.RATIO_16_9).build();
                 CameraSelector cameraSelector;
                 if (cameramode == 0)
                 {
@@ -386,8 +386,8 @@ public class camera extends Fragment {
                     @Override
                     public void onImageSaved(ImageCapture.@NonNull OutputFileResults outputFileResults)
                     {
-                            j_capturedPhoto.setImageBitmap(rotateBitmap(tempPhotoFile));
                             j_prv_cameraPreview.setVisibility(GONE);
+                            j_capturedPhoto.setImageBitmap(rotateBitmap(tempPhotoFile));
                             j_btn_changecamera.setVisibility(GONE);
                             j_capturedPhoto.setVisibility(VISIBLE);
                             j_btn_capture.setText("다시 찍기");
@@ -433,9 +433,5 @@ public class camera extends Fragment {
         // 예시: 토스트 메시지 띄우기
         Toast.makeText(getContext(), "음성인식으로 사진을 촬영합니다.", Toast.LENGTH_SHORT).show();
         takePicture();
-        savePicture();
-
     }
-
-
 }
