@@ -170,18 +170,6 @@ public class camera extends Fragment {
             }
         });
 
-        // 카메라 권환 확인하고 요청하기
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.CAMERA}, 1000);
-        }
-        // 마이크 권한 확인하고 요청하기
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{Manifest.permission.RECORD_AUDIO}, 1000);
-        }
         // TODO: 음성인식 구현하기
         // 음성인식 인텐트 생성하기
         sttIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
